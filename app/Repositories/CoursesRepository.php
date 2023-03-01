@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\DataTransferObjects\CourseData;
 use App\Models\Course;
 use Illuminate\Support\Collection;
 
@@ -17,14 +18,14 @@ class CoursesRepository
         return Course::find($id);
     }
     
-    public function create(array $data): Course
+    public function create(CourseData $data): Course
     {
-        return Course::create($data);
+        return Course::create($data->toArray());
     }
 
-    public function update(Course $course, array $data): bool
+    public function update(Course $course, CourseData $data): bool
     {
-        return $course->update($data);
+        return $course->update($data->toArray());
     }
 
     public function delete(Course $course): bool

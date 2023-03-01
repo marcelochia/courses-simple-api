@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTransferObjects\CourseDTO;
 use App\Http\Requests\CourseFormRequest;
 use App\Repositories\CoursesRepository;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class CourseController extends Controller
@@ -20,7 +20,7 @@ class CourseController extends Controller
         $courses = $this->repository->all();
 
         return response()->json([
-            'content' => $courses
+            'data' => $courses
         ]);
     }
 
@@ -29,10 +29,10 @@ class CourseController extends Controller
      */
     public function store(CourseFormRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $data = CourseDTO::fromArray($request->validated());
         $course = $this->repository->create($data);
 
-        return response()->json($course, Response::HTTP_CREATED);
+        return response()->json(['data' => $course], Response::HTTP_CREATED);
     }
 
     /**
@@ -50,14 +50,14 @@ class CourseController extends Controller
         }
 
         return response()->json([
-            'content' => $course
+            'data' => $course
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(CourseFormRequest $request, int $id): JsonResponse
     {
         $course = $this->repository->findById($id);
 
@@ -67,12 +67,11 @@ class CourseController extends Controller
                 Response::HTTP_NOT_FOUND
             );
         }
-
-        $data = $request->all();
-        $data['teacher_name'] = $request->teacherName;
+        
+        $data = CourseDTO::fromArray($request->validated());
         $this->repository->update($course, $data);
         
-        return response()->json($data);
+        return response()->json(['data' => $data]);
     }
 
     /**
