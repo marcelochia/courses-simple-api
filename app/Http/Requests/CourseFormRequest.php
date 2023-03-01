@@ -22,7 +22,7 @@ class CourseFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number' => 'required|string',
+            'number' => 'required|numeric',
             'name' => 'required|string',
             'category' => 'required|string',
             'prerequisite' => 'required|string',
