@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTransferObjects\CourseDTO;
 use App\Http\Requests\CourseFormRequest;
+use App\Http\Resources\CourseResource;
 use App\Repositories\CoursesRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -20,7 +21,7 @@ class CourseController extends Controller
         $courses = $this->repository->all();
 
         return response()->json([
-            'data' => $courses
+            'data' => CourseResource::collection($courses)
         ]);
     }
 
@@ -32,7 +33,7 @@ class CourseController extends Controller
         $data = CourseDTO::fromArray($request->validated());
         $course = $this->repository->create($data);
 
-        return response()->json(['data' => $course], Response::HTTP_CREATED);
+        return response()->json(['data' => new CourseResource($course)], Response::HTTP_CREATED);
     }
 
     /**
@@ -50,7 +51,7 @@ class CourseController extends Controller
         }
 
         return response()->json([
-            'data' => $course
+            'data' => new CourseResource($course)
         ]);
     }
 
@@ -60,7 +61,7 @@ class CourseController extends Controller
     public function update(CourseFormRequest $request, int $id): JsonResponse
     {
         $course = $this->repository->findById($id);
-
+        
         if (is_null($course)) {
             return response()->json(
                 ['message' => 'Course not found.'],
@@ -70,8 +71,8 @@ class CourseController extends Controller
         
         $data = CourseDTO::fromArray($request->validated());
         $this->repository->update($course, $data);
-        
-        return response()->json(['data' => $data]);
+
+        return response()->json(['data' => new CourseResource($course)]);
     }
 
     /**
